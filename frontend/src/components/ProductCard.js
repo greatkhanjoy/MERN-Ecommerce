@@ -13,7 +13,7 @@ const ProductCard = ({ product }) => {
       </div>
       <div className="flex justify-between items-center mt-4">
         <h3 className="text-gray-700">{product.name}</h3>
-        <Rating value={product.rating} text={product.numReviwes} />
+        <Rating value={product.rating} text={product.numReviews} />
       </div>
       <p className="mt-1 text-lg font-medium text-gray-900">${product.price}</p>
     </Link>

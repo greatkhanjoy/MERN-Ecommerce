@@ -1,7 +1,7 @@
 const Rating = ({ value, text }) => {
   return (
     <div className="rating flex items-center space-x-2">
-      <div className="rating-stars flex">
+      <div className="rating-stars flex text-yellow-500">
         <i
           className={
             value >= 1

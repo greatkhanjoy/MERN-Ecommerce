@@ -28,7 +28,7 @@ const ProductScreen = () => {
           <div className="flex flex-col product-info space-y-3">
             <h2 className="text-3xl font-semibold">{product.name}</h2>
             <p className="text-2xl font-medium">${product.price}</p>
-            <Rating value={product.rating} text={product.numReviwes} />
+            <Rating value={product.rating} text={product.numReviews} />
             <p>{product.description}</p>
             <p className="space-x-2">
               <i
