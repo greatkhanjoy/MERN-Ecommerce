@@ -1,38 +1,25 @@
+import asyncHandler from 'express-async-handler'
 import Product from '../models/Product.js'
 
-const getProducts = async (req, res) => {
-  try {
-    const products = await Product.find()
-    res.status(200).json({
-      status: 'success',
-      results: products.length,
-      data: {
-        products,
-      },
-    })
-  } catch (error) {
-    res.status(404).json({
-      status: 'fail',
-      message: error,
-    })
-  }
-}
+//@desc Get all products
+//@route GET /api/products
+//@access Public
 
-const getProduct = async (req, res) => {
-  try {
-    const product = await Product.findById(req.params.id)
-    res.status(200).json({
-      status: 'success',
-      data: {
-        product,
-      },
-    })
-  } catch (error) {
-    res.status(404).json({
-      status: 'fail',
-      message: error,
-    })
-  }
-}
+const getProducts = asyncHandler(async (req, res) => {
+  const products = await Product.find()
+  res.status(200).json(products)
+})
 
-export default { getProducts, getProduct }
+//@desc Get single product
+//@route GET /api/products/:id
+//@access Public
+const getProduct = asyncHandler(async (req, res) => {
+  const product = await Product.findById(req.params.id)
+  if (!product) {
+    res.status(404)
+    throw new Error('Product not found')
+  }
+  res.status(200).json(product)
+})
+
+export { getProducts, getProduct }

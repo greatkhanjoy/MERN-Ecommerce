@@ -38,6 +38,10 @@ const ProductSchema = new Schema(
       type: String,
       required: [true, 'Description is required'],
     },
+    countInStock: {
+      type: Number,
+      default: 0,
+    },
     rating: {
       type: Number,
       default: 0,
