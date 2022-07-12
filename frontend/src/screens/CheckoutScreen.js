@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
 import { saveShippingAddress } from '../actions/cartActions'
+import { createOrder } from '../actions/orderActions'
 
 const CheckoutScreen = () => {
   const navigate = useNavigate()
@@ -10,16 +11,17 @@ const CheckoutScreen = () => {
   const { userInfo } = user
   const cart = useSelector((state) => state.cart)
   const { cartItems, shippingAddress } = cart
+  const [errMessage, setErrMessage] = useState('')
   const addDecimal = (num) => {
     return (Math.round(num * 100) / 100).toFixed(2)
   }
-  cart.itemPrice = addDecimal(
+  cart.itemsPrice = addDecimal(
     cartItems.reduce((a, c) => a + c.price * c.qty, 0)
   )
-  cart.shippingPrice = addDecimal(cart.itemPrice > 100 ? 0 : 10)
-  cart.taxPrice = addDecimal(Number((cart.itemPrice * 0.15).toFixed(2)))
+  cart.shippingPrice = addDecimal(cart.itemsPrice > 100 ? 0 : 10)
+  cart.taxPrice = addDecimal(Number((cart.itemsPrice * 0.15).toFixed(2)))
   cart.totalPrice = (
-    Number(cart.itemPrice) +
+    Number(cart.itemsPrice) +
     Number(cart.shippingPrice) +
     Number(cart.taxPrice)
   ).toFixed(2)
@@ -33,6 +35,7 @@ const CheckoutScreen = () => {
     city: '',
     state: '',
     zip: '',
+    country: '',
     phone: '',
     note: '',
     items: [],
@@ -47,6 +50,7 @@ const CheckoutScreen = () => {
     sHcity: '',
     sHstate: '',
     sHzip: '',
+    sHcountry: '',
     sHphone: '',
     paymentMethod: 'paypal',
   }
@@ -58,13 +62,48 @@ const CheckoutScreen = () => {
     setValues({ ...values, [name]: value })
   }
 
+  const orderCreate = useSelector((state) => state.orderCreate)
+  const { order, error, success } = orderCreate
+  useEffect(() => {
+    if (success) {
+      navigate(`/order/${order._id}`)
+    }
+    //eslint-disable-next-line
+  }, [navigate, success])
+
   const formHandler = (event) => {
     event.preventDefault()
+    setErrMessage('')
+    if (
+      !values.name ||
+      !values.email ||
+      !values.address ||
+      !values.city ||
+      !values.state ||
+      !values.zip ||
+      !values.country ||
+      !values.phone ||
+      !values.company
+    ) {
+      setErrMessage('Please fill in all required fields')
+      return
+    }
     dispatch(saveShippingAddress(values))
 
     if (!userInfo) {
       navigate('/login')
     }
+    dispatch(
+      createOrder({
+        orderItems: cartItems,
+        shippingAddress: cart.shippingAddress,
+        paymentMethod: cart.shippingAddress.paymentMethod,
+        itemsPrice: cart.itemsPrice,
+        shippingPrice: cart.shippingPrice,
+        taxPrice: cart.taxPrice,
+        totalPrice: cart.totalPrice,
+      })
+    )
   }
 
   useEffect(() => {
@@ -91,7 +130,15 @@ const CheckoutScreen = () => {
             or <Link to={'/register'}> Create an account?</Link>
           </p>
         )}
-        <div className=""></div>
+
+        {errMessage && (
+          <div
+            class="p-4 mb-4 text-sm text-yellow-700 bg-yellow-100 rounded-lg dark:bg-yellow-200 dark:text-yellow-800"
+            role="alert"
+          >
+            {errMessage}
+          </div>
+        )}
         <form onSubmit={formHandler}>
           <div className="flex flex-col md:flex-row md:space-x-10 space-y-5">
             <div className="flex flex-col md:w-2/3 space-y-5">
@@ -111,9 +158,22 @@ const CheckoutScreen = () => {
                       required
                     />
                   </div>
-                  <div className="col-span-12 md:col-span-12 space-y-2">
+                  <div className="col-span-12 md:col-span-6 space-y-2 md:mr-2">
                     <label className="block font-medium leading-5 text-gray-700">
-                      Company Name (optional)
+                      Email Address *
+                    </label>
+                    <input
+                      name="email"
+                      value={values.email}
+                      onChange={handleInputChange}
+                      type="email"
+                      required
+                      className="w-full"
+                    />
+                  </div>
+                  <div className="col-span-12 md:col-span-6 space-y-2 md:ml-2">
+                    <label className="block font-medium leading-5 text-gray-700">
+                      Company Name (Optional)
                     </label>
                     <input
                       name="company"
@@ -175,7 +235,21 @@ const CheckoutScreen = () => {
                       className="w-full"
                     />
                   </div>
+
                   <div className="col-span-12 md:col-span-6 space-y-2 md:ml-2">
+                    <label className="block font-medium leading-5 text-gray-700">
+                      Country *
+                    </label>
+                    <input
+                      name="country"
+                      value={values.country}
+                      onChange={handleInputChange}
+                      type="text"
+                      required
+                      className="w-full"
+                    />
+                  </div>
+                  <div className="col-span-12 md:col-span-6 space-y-2 md:mr-2">
                     <label className="block font-medium leading-5 text-gray-700">
                       Phone *
                     </label>
@@ -185,19 +259,6 @@ const CheckoutScreen = () => {
                       onChange={handleInputChange}
                       type="text"
                       required
-                      className="w-full"
-                    />
-                  </div>
-                  <div className="col-span-12 md:col-span-12 space-y-2">
-                    <label className="block font-medium leading-5 text-gray-700">
-                      Email Address *
-                    </label>
-                    <input
-                      name="email"
-                      type="email"
-                      required
-                      value={values.email}
-                      onChange={handleInputChange}
                       className="w-full"
                     />
                   </div>
@@ -296,6 +357,19 @@ const CheckoutScreen = () => {
                         className="w-full"
                       />
                     </div>
+                    <div className="col-span-12 md:col-span-6 space-y-2 md:mr-2">
+                      <label className="block font-medium leading-5 text-gray-700">
+                        Country *
+                      </label>
+                      <input
+                        name="country"
+                        value={values.sHcountry}
+                        onChange={handleInputChange}
+                        type="text"
+                        required
+                        className="w-full"
+                      />
+                    </div>
                     <div className="col-span-12 md:col-span-6 space-y-2 md:ml-2">
                       <label className="block font-medium leading-5 text-gray-700">
                         Phone *
@@ -363,7 +437,7 @@ const CheckoutScreen = () => {
 
               <div className="cart-items flex justify-between">
                 <h4>Subtotal</h4>
-                <h4>${cartItems.length > 0 ? cart.itemPrice : '0.00'}</h4>
+                <h4>${cartItems.length > 0 ? cart.itemsPrice : '0.00'}</h4>
               </div>
               <hr />
               <div className="cart-items flex justify-between text-sm">
@@ -408,6 +482,14 @@ const CheckoutScreen = () => {
                 />
                 Stripe
               </label>
+              {error && (
+                <div
+                  class="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800"
+                  role="alert"
+                >
+                  {error}
+                </div>
+              )}
               <button
                 disabled={cartItems.length === 0}
                 type="submit"

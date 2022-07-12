@@ -8,6 +8,7 @@ import CartScreen from './screens/cartScreen'
 import CheckoutScreen from './screens/CheckoutScreen'
 import HomeScreen from './screens/HomeScreen'
 import LoginScreen from './screens/LoginScreen'
+import OrderScreen from './screens/orderScreen'
 import ProductScreen from './screens/ProductScreen'
 import Profile from './screens/ProfileScreen'
 import RegisterScreen from './screens/RegisterScreen'
@@ -35,6 +36,7 @@ function App() {
           />
           <Route path="/cart" element={<CartScreen />} />
           <Route path="/checkout" element={<CheckoutScreen />} />
+          <Route path="/order/:id" element={<OrderScreen />} />
         </Routes>
       </main>
       <ToastContainer

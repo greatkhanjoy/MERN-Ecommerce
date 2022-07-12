@@ -12,7 +12,7 @@ const OrderSchema = new Schema(
       {
         name: { type: String, required: [true, 'Name is required'] },
         price: { type: Number, required: [true, 'Price is required'] },
-        quantity: { type: Number, required: [true, 'Quantity is required'] },
+        qty: { type: Number, required: [true, 'Quantity is required'] },
         image: { type: String, required: [true, 'Image is required'] },
         product: {
           type: Schema.Types.ObjectId,
@@ -50,6 +50,11 @@ const OrderSchema = new Schema(
     shippingPrice: {
       type: Number,
       required: [true, 'Shipping price is required'],
+      default: 0.0,
+    },
+    itemsPrice: {
+      type: Number,
+      required: [true, 'Items price is required'],
       default: 0.0,
     },
     totalPrice: {
