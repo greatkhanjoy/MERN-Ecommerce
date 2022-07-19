@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { listProducts } from '../actions/productActions'
+import Hero from '../components/Hero'
 import ProductCard from '../components/ProductCard'
 
 const HomeScreen = () => {
@@ -15,7 +16,8 @@ const HomeScreen = () => {
   return (
     <div className="bg-white">
       <div className="max-w-2xl mx-auto  px-4 py-5 sm:px-6 lg:max-w-7xl lg:px-8">
-        <h2 className="text-xl mb-5">Products</h2>
+        <Hero />
+        <h2 className="text-2xl text-center mb-5 mt-15">Recent Products</h2>
         {loading ? (
           <h2> Loading...</h2>
         ) : error ? (
