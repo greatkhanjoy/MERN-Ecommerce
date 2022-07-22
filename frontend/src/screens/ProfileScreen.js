@@ -47,7 +47,11 @@ const Profile = () => {
     } else {
       navigate('/login')
     }
-  }, [userInfo, navigate, dispatch])
+    if (errorOrders && errorOrders === 'jwt expired') {
+      localStorage.removeItem('userInfo')
+      navigate('/login')
+    }
+  }, [userInfo, navigate, dispatch, errorOrders])
   return (
     <>
       <div className="bg-white">
@@ -233,7 +237,11 @@ const Profile = () => {
                 {loadingOrders ? (
                   <Loading />
                 ) : errorOrders ? (
-                  <h2>{errorOrders}</h2>
+                  <h2>
+                    {errorOrders === 'jwt expired'
+                      ? 'Please login'
+                      : errorOrders}
+                  </h2>
                 ) : (
                   <>
                     {orders && orders.length > 0 ? (
