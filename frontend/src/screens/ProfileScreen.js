@@ -1,15 +1,23 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { userOrderList } from '../actions/orderActions'
 import { update } from '../actions/userActions'
+import Loading from '../components/Loading'
 
 const Profile = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
+
   const user = useSelector((state) => state.user)
   const { userInfo } = user
+
   const updatedData = useSelector((state) => state.userUpdate)
   const { loading, error } = updatedData
+
+  const orderUserList = useSelector((state) => state.orderUserList)
+  const { orders, loading: loadingOrders, error: errorOrders } = orderUserList
+
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -30,12 +38,16 @@ const Profile = () => {
   }
   useEffect(() => {
     if (userInfo) {
+      if (!userInfo.name) {
+        navigate('/login')
+      }
       setName(userInfo.name)
       setEmail(userInfo.email)
+      dispatch(userOrderList())
     } else {
       navigate('/login')
     }
-  }, [userInfo, navigate])
+  }, [userInfo, navigate, dispatch])
   return (
     <>
       <div className="bg-white">
@@ -206,6 +218,84 @@ const Profile = () => {
           </div>
 
           <div className="mt-10 sm:mt-0">
+            <div className="md:grid md:grid-cols-6 md:gap-6">
+              <div className="md:col-span-2">
+                <div className="px-4 sm:px-0">
+                  <h3 className="text-lg font-medium leading-6 text-gray-900">
+                    Orders
+                  </h3>
+                  <p className="mt-1 text-sm text-gray-600">
+                    Decide which communications you'd like to receive and how.
+                  </p>
+                </div>
+              </div>
+              <div className="mt-5 md:mt-0 md:col-span-4 shadow overflow-hidden sm:rounded-md p-3 space-y-2">
+                {loadingOrders ? (
+                  <Loading />
+                ) : errorOrders ? (
+                  <h2>{errorOrders}</h2>
+                ) : (
+                  <>
+                    {orders && orders.length > 0 ? (
+                      <>
+                        {orders.map((order) => (
+                          <div className="order flex justify-between items-center">
+                            <div className="flex flex-col">
+                              <strong>#ID</strong>
+                              <span>{order._id}</span>
+                            </div>
+                            <div className="flex flex-col">
+                              <strong>TOTAL</strong>
+                              <span>
+                                $
+                                {(
+                                  Math.round(order.totalPrice * 100) / 100
+                                ).toFixed(2)}
+                              </span>
+                            </div>
+                            <div className="flex flex-col">
+                              <strong>PAID</strong>
+                              <span>{order.isPaid ? 'Paid' : 'Not paid'}</span>
+                            </div>
+                            <div className="flex flex-col">
+                              <strong>DELIVERED</strong>
+                              <span>
+                                {order.isDelivered
+                                  ? 'Delivered'
+                                  : 'Not delivered'}
+                              </span>
+                            </div>
+                            <div className="flex flex-col">
+                              <strong>DATE</strong>
+                              <span> {order.createdAt.substring(0, 10)} </span>
+                            </div>
+                            <div className="flex flex-col">
+                              <Link
+                                to={`/order/${order._id}`}
+                                className="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-800"
+                              >
+                                DETAILS
+                              </Link>
+                            </div>
+                          </div>
+                        ))}
+                      </>
+                    ) : (
+                      <h3>You haven't ordered yet!</h3>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="hidden sm:block" aria-hidden="true">
+            <div className="py-5">
+              <div className="border-t border-gray-200" />
+            </div>
+          </div>
+
+          <div className="mt-10 sm:mt-0">
             <div className="md:grid md:grid-cols-3 md:gap-6">
               <div className="md:col-span-1">
                 <div className="px-4 sm:px-0">
@@ -218,7 +308,7 @@ const Profile = () => {
                 </div>
               </div>
               <div className="mt-5 md:mt-0 md:col-span-2">
-                <form action="#" method="POST">
+                <form>
                   <div className="shadow overflow-hidden sm:rounded-md">
                     <div className="px-4 py-5 bg-white space-y-6 sm:p-6">
                       <fieldset>
@@ -352,7 +442,7 @@ const Profile = () => {
                     </div>
                     <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
                       <button
-                        type="submit"
+                        type="button"
                         className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                       >
                         Save

@@ -2,20 +2,27 @@ import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { PayPalButton } from 'react-paypal-button-v2'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { getOrderDetails, payOrder } from '../actions/orderActions'
 import { ORDER_PAY_RESET } from '../constants/orderConstants'
 const OrderScreen = () => {
   const { id } = useParams()
   const [sdkReady, setSdkReady] = useState(false)
   const dispatch = useDispatch()
+
+  const user = useSelector((state) => state.user)
+  const { userInfo } = user
+
   const orderDetails = useSelector((state) => state.orderDetails)
   const { order, loading, error } = orderDetails
 
   const orderPay = useSelector((state) => state.orderPay)
   const { loading: loadingPay, success: successPay } = orderPay
-
+  const navigate = useNavigate()
   useEffect(() => {
+    if (!userInfo) {
+      navigate('/login')
+    }
     const addPaypalScript = async () => {
       const { data: clientId } = await axios.get('/api/config/paypal')
       const script = document.createElement('script')
@@ -37,7 +44,7 @@ const OrderScreen = () => {
         setSdkReady(true)
       }
     }
-  }, [dispatch, id, successPay, order])
+  }, [dispatch, id, successPay, order, userInfo, navigate])
   const addDecimal = (num) => {
     return (Math.round(num * 100) / 100).toFixed(2)
   }

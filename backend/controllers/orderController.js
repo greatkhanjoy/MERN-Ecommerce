@@ -1,5 +1,6 @@
 import AsyncHandler from 'express-async-handler'
 import Order from '../models/order.js'
+import hasPermission from '../utill/hasPermission.js'
 
 const addOrderItems = AsyncHandler(async (req, res, next) => {
   const {
@@ -34,16 +35,30 @@ const addOrderItems = AsyncHandler(async (req, res, next) => {
 //@desc Get single order
 //@route GET /api/orders/:id
 //@access Private
-const getOrderByID = AsyncHandler(async (req, res, next) => {
+const getOrderByID = AsyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id).populate(
     'user',
     'name email'
   )
+  const permitted = await hasPermission(req.user, order.user)
+  if (!permitted) {
+    return res.status(401).json({
+      message: 'Not authorized',
+    })
+  }
   if (!order) {
     res.status(404)
     throw new Error('Order not found')
   }
   res.status(200).json(order)
+})
+
+//@desc Get logged in user orders
+//@route GET /api/orders/myorders
+//@access Private
+const getMyOrders = AsyncHandler(async (req, res) => {
+  const orders = await Order.find({ user: req.user._id })
+  res.status(200).json(orders)
 })
 
 const updateOrderToPaid = AsyncHandler(async (req, res, next) => {
@@ -66,4 +81,4 @@ const updateOrderToPaid = AsyncHandler(async (req, res, next) => {
   }
 })
 
-export { addOrderItems, getOrderByID, updateOrderToPaid }
+export { addOrderItems, getOrderByID, updateOrderToPaid, getMyOrders }

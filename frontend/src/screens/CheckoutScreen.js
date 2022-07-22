@@ -418,7 +418,7 @@ const CheckoutScreen = () => {
                   >
                     <div className="flex space-x-2">
                       <img src={item.image} className="w-5" alt={item.name} />
-                      <Link to={`/product/${item.id}`}>
+                      <Link to={`/product/${item.product}`}>
                         <h4 className="flex space-x-2"> {item.name} </h4>
                       </Link>
 

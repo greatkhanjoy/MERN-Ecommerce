@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { addToCart } from '../actions/cartActions'
 import { singleProduct } from '../actions/productActions'
+import Loading from '../components/Loading'
 
 import Rating from '../components/utill/Rating'
 
@@ -12,6 +13,9 @@ const ProductScreen = ({ action }) => {
   const productDetails = useSelector((state) => state.productDetails)
   const { product, loading, error } = productDetails
   const { id } = useParams()
+  useEffect(() => {
+    dispatch(singleProduct(id))
+  }, [dispatch, id])
   const [qty, setQty] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -37,10 +41,6 @@ const ProductScreen = ({ action }) => {
       })
   }
 
-  useEffect(() => {
-    dispatch(singleProduct(id))
-  }, [dispatch, id])
-
   return (
     <div className="bg-white">
       <div className="max-w-2xl mx-auto py-5 px-4  sm:px-6 lg:max-w-7xl lg:px-8 space-y-5">
@@ -48,7 +48,7 @@ const ProductScreen = ({ action }) => {
           <Link to="/">GO BACK</Link>
         </div>
         {loading ? (
-          <h2>Loading....</h2>
+          <Loading />
         ) : error ? (
           <h3>{error}</h3>
         ) : (

@@ -42,6 +42,9 @@ export const login = (email, password) => async (dispatch) => {
 
 export const logout = () => async (dispatch) => {
   localStorage.removeItem('userInfo')
+  localStorage.removeItem('shippingAddress')
+  localStorage.removeItem('__paypal_storage__')
+  localStorage.removeItem('__belter_experiment_storage__')
   dispatch({ type: USER_LOGOUT_REQUEST })
 }
 
