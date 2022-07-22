@@ -10,12 +10,12 @@ import Rating from '../components/utill/Rating'
 
 const ProductScreen = ({ action }) => {
   const dispatch = useDispatch()
-  const productDetails = useSelector((state) => state.productDetails)
-  const { product, loading, error } = productDetails
   const { id } = useParams()
   useEffect(() => {
     dispatch(singleProduct(id))
   }, [dispatch, id])
+  const productDetails = useSelector((state) => state.productDetails)
+  const { product, loading, error } = productDetails
   const [qty, setQty] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
 

@@ -1,5 +1,5 @@
 import AsyncHandler from 'express-async-handler'
-import Order from '../models/order.js'
+import Order from '../models/Order.js'
 import hasPermission from '../utill/hasPermission.js'
 
 const addOrderItems = AsyncHandler(async (req, res, next) => {
