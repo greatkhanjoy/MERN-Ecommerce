@@ -47,6 +47,37 @@ const UserMenu = ({ user }) => {
                 </Link>
               )}
             </Menu.Item>
+            {user.isAdmin && (
+              <Menu.Item>
+                {({ active }) => (
+                  <Link
+                    to={'/users'}
+                    className={classNames(
+                      active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                      'block px-4 py-2 text-sm'
+                    )}
+                  >
+                    Users
+                  </Link>
+                )}
+              </Menu.Item>
+            )}
+            {user.isAdmin && (
+              <Menu.Item>
+                {({ active }) => (
+                  <Link
+                    to={'/admin/products'}
+                    className={classNames(
+                      active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                      'block px-4 py-2 text-sm'
+                    )}
+                  >
+                    Products
+                  </Link>
+                )}
+              </Menu.Item>
+            )}
+
             <form>
               <Menu.Item>
                 {({ active }) => (

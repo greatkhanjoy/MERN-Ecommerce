@@ -11,7 +11,8 @@ const LoginScreen = () => {
   const { loading, error, userInfo } = user
   useEffect(() => {
     if (userInfo) {
-      navigate(-1)
+      navigate('/')
+      // navigate(-1)
     }
   }, [navigate, userInfo])
   const [email, setEmail] = useState('')

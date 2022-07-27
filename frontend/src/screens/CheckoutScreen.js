@@ -133,7 +133,7 @@ const CheckoutScreen = () => {
 
         {errMessage && (
           <div
-            class="p-4 mb-4 text-sm text-yellow-700 bg-yellow-100 rounded-lg dark:bg-yellow-200 dark:text-yellow-800"
+            className="p-4 mb-4 text-sm text-yellow-700 bg-yellow-100 rounded-lg dark:bg-yellow-200 dark:text-yellow-800"
             role="alert"
           >
             {errMessage}
@@ -468,10 +468,11 @@ const CheckoutScreen = () => {
                   checked={values.paymentMethod === 'paypal'}
                   onClick={handleInputChange}
                   className="mr-2"
+                  required
                 />
                 Paypal or Credit card
               </label>
-              <label className="block font-medium leading-5 text-gray-700">
+              {/* <label className="block font-medium leading-5 text-gray-700">
                 <input
                   name="paymentMethod"
                   type={'radio'}
@@ -481,10 +482,10 @@ const CheckoutScreen = () => {
                   onClick={handleInputChange}
                 />
                 Stripe
-              </label>
+              </label> */}
               {error && (
                 <div
-                  class="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800"
+                  className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800"
                   role="alert"
                 >
                   {error}

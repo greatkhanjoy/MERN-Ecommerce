@@ -16,3 +16,15 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/*
+ * Popup Form
+ */
+ .popup-form{
+  left:100%;
+  transition: 0.4s;
+ }
+ 
+.active-popup{
+  left:0;
+}
