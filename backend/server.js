@@ -17,8 +17,6 @@ const port = process.env.PORT || 5000
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(fileUpload({ useTempFiles: true }))
-const __dirname = path.resolve()
-app.use(express.static(__dirname + '/public'))
 
 app.use('/api/products', Products)
 app.use('/api/users', AuthRoutes)
@@ -28,6 +26,20 @@ app.use('/api/uploads', UploadRoutes)
 app.get('/api/config/paypal', (req, res) =>
   res.send(process.env.PAYPAL_CLIENT_ID)
 ) // get paypal client id
+
+const __dirname = path.resolve()
+app.use(express.static(__dirname + '/public'))
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '/frontend/build')))
+  app.get('*', (req, res) =>
+    res.sendFile(path.join(__dirname, '/frontend/build/index.html'))
+  )
+} else {
+  app.get('/', (req, res) => {
+    res.send('Api is running')
+  })
+}
 
 app.use(notFound)
 app.use(errorHandler)
