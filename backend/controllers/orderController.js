@@ -2,6 +2,9 @@ import AsyncHandler from 'express-async-handler'
 import Order from '../models/Order.js'
 import hasPermission from '../utill/hasPermission.js'
 
+//@desc    New Order
+//@route   POST /api/orders
+//@access  Private
 const addOrderItems = AsyncHandler(async (req, res, next) => {
   const {
     orderItems,
@@ -18,6 +21,7 @@ const addOrderItems = AsyncHandler(async (req, res, next) => {
       message: 'Order items is required',
     })
   }
+
   const order = new Order({
     user: req.user._id,
     orderItems,
@@ -28,6 +32,7 @@ const addOrderItems = AsyncHandler(async (req, res, next) => {
     shippingPrice,
     totalPrice,
   })
+
   const createdOrder = await order.save()
   res.status(201).json(createdOrder)
 })
@@ -61,6 +66,9 @@ const getMyOrders = AsyncHandler(async (req, res) => {
   res.status(200).json(orders)
 })
 
+//@desc Order payment
+//@route POST /api/orders/:id/pay
+//@access Private
 const updateOrderToPaid = AsyncHandler(async (req, res, next) => {
   const order = await Order.findById(req.params.id)
 
@@ -81,4 +89,36 @@ const updateOrderToPaid = AsyncHandler(async (req, res, next) => {
   }
 })
 
-export { addOrderItems, getOrderByID, updateOrderToPaid, getMyOrders }
+//@desc Get all orders
+//@route GET /api/orders
+//@access Private/Admin
+const getAllOrders = AsyncHandler(async (req, res) => {
+  const orders = await Order.find().populate('user', 'name email')
+  res.status(200).json(orders)
+})
+
+//@desc Mark order as delivered
+//@route POST /api/orders/:id/delivered
+//@access Private/Admin
+const updateOrderToDelivered = AsyncHandler(async (req, res, next) => {
+  const order = await Order.findById(req.params.id)
+
+  if (order) {
+    order.isDelivered = true
+    order.deliveredAt = Date.now()
+    const updatedOrder = await order.save()
+    res.status(200).json(updatedOrder)
+  } else {
+    res.status(404)
+    throw new Error('Order not found')
+  }
+})
+
+export {
+  addOrderItems,
+  getOrderByID,
+  updateOrderToPaid,
+  getMyOrders,
+  getAllOrders,
+  updateOrderToDelivered,
+}

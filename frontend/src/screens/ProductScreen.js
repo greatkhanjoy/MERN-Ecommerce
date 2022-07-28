@@ -1,9 +1,12 @@
+import { Markup } from 'interweave'
 import { useEffect, useState } from 'react'
+import { Helmet } from 'react-helmet'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { addToCart } from '../actions/cartActions'
-import { singleProduct } from '../actions/productActions'
+import { addReview, singleProduct } from '../actions/productActions'
+import { logout } from '../actions/userActions'
 import Loading from '../components/Loading'
 
 import Rating from '../components/utill/Rating'
@@ -11,13 +14,47 @@ import Rating from '../components/utill/Rating'
 const ProductScreen = ({ action }) => {
   const dispatch = useDispatch()
   const { id } = useParams()
-  useEffect(() => {
-    dispatch(singleProduct(id))
-  }, [dispatch, id])
+
+  const userInfo = useSelector((state) => state.user.userInfo)
+
   const productDetails = useSelector((state) => state.productDetails)
   const { product, loading, error } = productDetails
+
+  const productReview = useSelector((state) => state.productReview)
+  const {
+    loading: loadingReview,
+    error: errorReview,
+    success: successReview,
+  } = productReview
+
   const [qty, setQty] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
+  const [detailsTab, setDetailsTab] = useState(true)
+  const [reviewTab, setReviewsTab] = useState(false)
+  const [reviewRating, setReviewRating] = useState(1)
+  const [reviewComment, setReviewComment] = useState('')
+
+  const alreadyReviewd = () => {
+    if (product.reviews.length > 0) {
+      return product.reviews.find(
+        (review) => review.user.toString() === userInfo.id.toString()
+      )
+    }
+  }
+
+  useEffect(() => {
+    dispatch(singleProduct(id))
+    if (error === 'jwt expired' || errorReview === 'jwt expired') {
+      toast.error('Your session has expired. Please login again.')
+      dispatch(logout())
+    }
+    if (successReview) {
+      toast.success('Review added successfully.')
+    }
+    if (errorReview) {
+      toast.error(errorReview)
+    }
+  }, [dispatch, id, successReview, errorReview, error])
 
   const addToCartHandler = (e) => {
     e.preventDefault()
@@ -41,8 +78,34 @@ const ProductScreen = ({ action }) => {
       })
   }
 
+  const addReviewHandler = (e) => {
+    e.preventDefault()
+    if (userInfo) {
+      dispatch(
+        addReview({
+          id: product._id,
+          rating: reviewRating,
+          comment: reviewComment,
+        })
+      )
+    } else {
+      toast.error('Please login to add review.')
+    }
+  }
+
   return (
     <div className="bg-white">
+      <Helmet>
+        <title>{product && `${product.name} | Ecommerce`} </title>
+        <meta
+          name="description"
+          content="Ecommerce site with React and Node js"
+        />
+        <meta
+          name="keywords"
+          content="Ecommerce, React, Redux, Nodejs, MongoDB"
+        />
+      </Helmet>
       <div className="max-w-2xl mx-auto py-5 px-4  sm:px-6 lg:max-w-7xl lg:px-8 space-y-5">
         <div className="">
           <Link to="/">GO BACK</Link>
@@ -54,14 +117,14 @@ const ProductScreen = ({ action }) => {
         ) : (
           <>
             <div className="flex flex-col md:flex-row md:space-x-10">
-              <div className="flex flex-col product-image  md:w-3/5">
+              <div className="flex flex-col product-image  md:w-2/5">
                 <img src={product.image} alt="" />
               </div>
               <div className="flex flex-col product-info space-y-3">
                 <h2 className="text-3xl font-semibold">{product.name}</h2>
                 <p className="text-2xl font-medium">${product.price}</p>
                 <Rating value={product.rating} text={product.numReviews} />
-                <p>{product.description}</p>
+                <Markup content={product.description} />
 
                 <form onSubmit={addToCartHandler}>
                   <div className="flex space-x-10 items-center">
@@ -117,7 +180,133 @@ const ProductScreen = ({ action }) => {
               </div>
             </div>
             <div className="">
-              <p>{product.description}</p>
+              <ul className="flex flex-wrap text-xl text-center text-black border-b border-gray-200 dark:border-gray-700 dark:text-gray-400">
+                <li className="mr-2">
+                  <button
+                    onClick={() => {
+                      setDetailsTab(true)
+                      setReviewsTab(false)
+                    }}
+                    aria-current="page"
+                    className={`${
+                      detailsTab ? 'text-gray-600 bg-gray-100 rounded-t-lg' : ''
+                    } inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50`}
+                  >
+                    Details
+                  </button>
+                </li>
+                <li className="mr-2">
+                  <button
+                    onClick={() => {
+                      setDetailsTab(false)
+                      setReviewsTab(true)
+                    }}
+                    className={`${
+                      reviewTab ? 'text-gray-600 bg-gray-100 rounded-t-lg' : ''
+                    }  inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 `}
+                  >
+                    Reviews
+                  </button>
+                </li>
+              </ul>
+              {detailsTab && (
+                <div className="details p-4 bg-gray-50">
+                  <Markup content={product.description} />
+                </div>
+              )}
+              {reviewTab && (
+                <div className="reviews">
+                  <h3 className="text-xl">Reviews</h3>
+                  <div className="flex space-x-4">
+                    <Rating value={product.rating} text={product.numReviews} />
+                    <p>{product.rating} out of 5</p>
+                  </div>
+                  <div className="newReview mt-10">
+                    <h3 className="text-xl">Write a review</h3>
+                    {!userInfo ? (
+                      <h3>
+                        Please <Link to={'/login'}>login</Link> to review
+                      </h3>
+                    ) : alreadyReviewd() ? (
+                      <h3>You already reviewed this product.</h3>
+                    ) : (
+                      <form
+                        onSubmit={(e) => addReviewHandler(e)}
+                        className="space-y-2"
+                      >
+                        <div className="flex flex-col space-y-1">
+                          <label className="text-sm">Rating *</label>
+                          <select
+                            onChange={(e) => setReviewRating(e.target.value)}
+                          >
+                            <option value="1">Poor</option>
+                            <option value="2">Fair</option>
+                            <option value="3">Good</option>
+                            <option value="4">Very Good</option>
+                            <option value="5">Excelent</option>
+                          </select>
+                        </div>
+                        <div className="flex flex-col space-y-1">
+                          <label htmlFor="name">Comment *</label>
+                          <textarea
+                            required
+                            onChange={(e) => setReviewComment(e.target.value)}
+                            rows={3}
+                            className="w-full"
+                            placeholder="comments.."
+                            value={reviewComment}
+                          ></textarea>
+                        </div>
+                        <div>
+                          <button
+                            disabled={loadingReview}
+                            type="submit"
+                            className="bg-black px-6 py-2 text-white"
+                          >
+                            Submit
+                          </button>
+                        </div>
+                      </form>
+                    )}
+                  </div>
+                  <div className="reviews-list mt-5 space-y-4">
+                    {product.reviews.length > 0 ? (
+                      product.reviews.map((review) => (
+                        <article key={review._id}>
+                          <div className="flex items-center mb-4 space-x-4">
+                            <img
+                              className="w-10 h-10 rounded-full"
+                              src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                              alt=""
+                            />
+                            <div className="space-y-1 font-medium dark:text-white">
+                              <p>{review.name}</p>
+                              <Rating value={review.rating} />{' '}
+                            </div>
+                          </div>
+                          <div className="flex items-center mb-1">
+                            <h3 className="ml-2 text-sm font-semibold text-gray-900 dark:text-white">
+                              {review.comment}
+                            </h3>
+                          </div>
+                          <footer className="mb-5 text-sm text-gray-500 dark:text-gray-400">
+                            <p>
+                              Reviewed on{' '}
+                              <time
+                                dateTime={review.createdAt.substring(0, 10)}
+                              >
+                                {review.createdAt.substring(0, 10)}
+                              </time>
+                            </p>
+                          </footer>
+                        </article>
+                      ))
+                    ) : (
+                      <p className="text-xl">No reviews yet.</p>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </>
         )}

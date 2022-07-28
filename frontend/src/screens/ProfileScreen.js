@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
+import { Helmet } from 'react-helmet'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import { userOrderList } from '../actions/orderActions'
-import { update } from '../actions/userActions'
+import { logout, update } from '../actions/userActions'
 import Loading from '../components/Loading'
 
 const Profile = () => {
@@ -37,23 +39,40 @@ const Profile = () => {
     })
   }
   useEffect(() => {
+    if (error === 'jwt expired' || errorOrders === 'jwt expired') {
+      toast.error('Session expired. Please login again')
+      dispatch(logout())
+      navigate('/login')
+    }
+
     if (userInfo) {
       if (!userInfo.name) {
+        toast.error('Session expired. Please login again')
+        dispatch(logout())
         navigate('/login')
       }
+
       setName(userInfo.name)
       setEmail(userInfo.email)
       dispatch(userOrderList())
     } else {
       navigate('/login')
     }
-    if (errorOrders && errorOrders === 'jwt expired') {
-      localStorage.removeItem('userInfo')
-      navigate('/login')
-    }
-  }, [userInfo, navigate, dispatch, errorOrders])
+  }, [userInfo, navigate, dispatch, errorOrders, error])
   return (
     <>
+      <Helmet>
+        <title>Profile | Ecommerce </title>
+        <meta
+          name="description"
+          content="Ecommerce site with React and Node js"
+        />
+        <meta
+          name="keywords"
+          content="Ecommerce, React, Redux, Nodejs, MongoDB"
+        />
+      </Helmet>
+
       <div className="bg-white">
         <div className="max-w-2xl mx-auto  px-4 py-5 sm:px-6 lg:max-w-7xl lg:px-8">
           <div className="mt-10 sm:mt-0">

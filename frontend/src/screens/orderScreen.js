@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
+import { Helmet } from 'react-helmet'
 import { PayPalButton } from 'react-paypal-button-v2'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useNavigate, useParams } from 'react-router-dom'
@@ -56,6 +57,17 @@ const OrderScreen = () => {
 
   return (
     <div className="bg-white">
+      <Helmet>
+        <title>Order | Ecommerce </title>
+        <meta
+          name="description"
+          content="Ecommerce site with React and Node js"
+        />
+        <meta
+          name="keywords"
+          content="Ecommerce, React, Redux, Nodejs, MongoDB"
+        />
+      </Helmet>
       <div className="max-w-2xl mx-auto  px-4 py-5 sm:px-6 lg:max-w-7xl lg:px-8">
         {loading ? (
           <h3>Loading...</h3>
@@ -63,6 +75,15 @@ const OrderScreen = () => {
           <h3>{error}</h3>
         ) : (
           <div className="order_detils space-y-3">
+            {userInfo && userInfo.isAdmin ? (
+              <Link
+                className="bg-black text-white px-6 py-2"
+                to={'/admin/orders/'}
+              >
+                <i class="fa-solid fa-angle-left"></i> Back to Orders
+              </Link>
+            ) : null}
+
             <div className="flex flex-col md:flex-row md:items-center md:justify-between">
               <h2 className="text-2xl">Order #{order._id} </h2>
               <div className="flex space-x-3 items-center">
@@ -98,7 +119,7 @@ const OrderScreen = () => {
               </a>
             </div>
             <div className="flex items-center space-x-5">
-              <p>Order date: {order.createdAt}</p>
+              <p>Order date: {order.createdAt.substring(0, 10)}</p>
               <p>Order status: {order.isDelivered ? 'Delivered' : 'Pending'}</p>
             </div>
             <hr />

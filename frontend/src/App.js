@@ -4,6 +4,7 @@ import { ToastContainer } from 'react-toastify'
 import Footer from './components/Footer'
 import Header from './components/Header'
 import CartDrawer from './components/utill/CartDrawer'
+import OrdersPage from './screens/admin/OrdersPage'
 import ProductsPage from './screens/admin/ProductsPage'
 import CartScreen from './screens/cartScreen'
 import CheckoutScreen from './screens/CheckoutScreen'
@@ -13,6 +14,7 @@ import OrderScreen from './screens/orderScreen'
 import ProductScreen from './screens/ProductScreen'
 import Profile from './screens/ProfileScreen'
 import RegisterScreen from './screens/RegisterScreen'
+import ShopScreen from './screens/ShopScreen'
 import UsersScreen from './screens/UsersScreen'
 
 function App() {
@@ -32,6 +34,8 @@ function App() {
           <Route path="/register" element={<RegisterScreen />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/" element={<HomeScreen />} exact />
+          <Route path="/search/:keyword" element={<HomeScreen />} />
+          <Route path="/shop" element={<ShopScreen />} />
           <Route
             path="/product/:id"
             element={<ProductScreen action={openDrawer} />}
@@ -41,6 +45,7 @@ function App() {
           <Route path="/order/:id" element={<OrderScreen />} />
           <Route path="/users" element={<UsersScreen />} />
           <Route path="/admin/products" element={<ProductsPage />} />
+          <Route path="/admin/orders" element={<OrdersPage />} />
         </Routes>
       </main>
       <ToastContainer

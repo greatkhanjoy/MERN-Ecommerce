@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Helmet } from 'react-helmet'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
 import { saveShippingAddress } from '../actions/cartActions'
@@ -82,8 +83,7 @@ const CheckoutScreen = () => {
       !values.state ||
       !values.zip ||
       !values.country ||
-      !values.phone ||
-      !values.company
+      !values.phone
     ) {
       setErrMessage('Please fill in all required fields')
       return
@@ -117,6 +117,18 @@ const CheckoutScreen = () => {
 
   return (
     <div className="bg-white">
+      <Helmet>
+        <title>Checkout | Ecommerce </title>
+        <meta
+          name="description"
+          content="Ecommerce site with React and Node js"
+        />
+        <meta
+          name="keywords"
+          content="Ecommerce, React, Redux, Nodejs, MongoDB"
+        />
+      </Helmet>
+
       <div className="max-w-2xl mx-auto  px-4 py-5 sm:px-6 lg:max-w-7xl lg:px-8">
         <h2 className="text-2xl mb-5 text-center">Checkout</h2>
         {userInfo ? (

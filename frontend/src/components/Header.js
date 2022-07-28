@@ -1,5 +1,6 @@
 import { useSelector } from 'react-redux'
 import { Link, useLocation } from 'react-router-dom'
+import SearchBox from './SearchBox'
 import UserMenu from './utill/UserMenu'
 
 const Header = ({ action }) => {
@@ -11,7 +12,7 @@ const Header = ({ action }) => {
     <header>
       <nav className="bg-gray-800">
         <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
-          <div className="relative flex items-center justify-between h-20">
+          <div className="relative flex items-center justify-between space-x-2 h-20">
             <div className="absolute inset-y-0 left-0 flex items-center sm:hidden"></div>
             <div className="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
               <div className="flex-shrink-0 flex items-center">
@@ -30,28 +31,21 @@ const Header = ({ action }) => {
                     } text-white px-3 py-2 rounded-md text-sm font-medium`}
                     aria-current="page"
                   >
-                    Dashboard
-                  </Link>
-
-                  <Link
-                    to={'/cart'}
-                    className={` ${
-                      location.pathname === '/cart' ? 'bg-gray-900' : ''
-                    } text-white px-3 py-2 rounded-md text-sm font-medium`}
-                  >
-                    Cart
+                    Home
                   </Link>
                   <Link
-                    to={'/checkout'}
+                    to={'/shop'}
                     className={` ${
-                      location.pathname === '/checkout' ? 'bg-gray-900' : ''
+                      location.pathname === '/shop' ? 'bg-gray-900' : ''
                     } text-white px-3 py-2 rounded-md text-sm font-medium`}
+                    aria-current="page"
                   >
-                    Checkout
+                    Shop
                   </Link>
                 </div>
               </div>
             </div>
+            <SearchBox />
             <div className=" flex items-center space-x-4">
               <button onClick={action} className="text-white">
                 <i className="fa-solid fa-cart-shopping mr-1"></i>

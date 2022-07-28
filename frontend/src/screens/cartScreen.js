@@ -1,3 +1,4 @@
+import { Helmet } from 'react-helmet'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -12,6 +13,17 @@ const CartScreen = () => {
   }
   return (
     <div className="bg-white">
+      <Helmet>
+        <title>Cart | Ecommerce</title>
+        <meta
+          name="description"
+          content="Ecommerce site with React and Node js"
+        />
+        <meta
+          name="keywords"
+          content="Ecommerce, React, Redux, Nodejs, MongoDB"
+        />
+      </Helmet>
       <div className="max-w-2xl mx-auto py-5 px-4  sm:px-6 lg:max-w-7xl lg:px-8 space-y-5">
         {cartItems.length === 0 ? (
           <div className="text-center mt-24 space-y-6">

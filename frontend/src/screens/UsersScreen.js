@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Helmet } from 'react-helmet'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -108,6 +109,17 @@ const UsersScreen = () => {
 
   return (
     <div className="bg-white">
+      <Helmet>
+        <title>Users | Ecommerce </title>
+        <meta
+          name="description"
+          content="Ecommerce site with React and Node js"
+        />
+        <meta
+          name="keywords"
+          content="Ecommerce, React, Redux, Nodejs, MongoDB"
+        />
+      </Helmet>
       <div className="max-w-2xl mx-auto  px-4 py-5 sm:px-6 lg:max-w-7xl lg:px-8">
         <h2 className="text-2xl py-4 ">Users</h2>
         <div className="overflow-x-auto relative shadow-md">
@@ -205,8 +217,8 @@ const UsersScreen = () => {
           </table>
         </div>
       </div>
-      <div className="popup-form fixed w-full h-screen top-0 bg-[#57535380] to-transparent">
-        <div className="popup-form-content bg-white rounded-sm m-auto w-[450px] p-5 overflow-auto flex-col flex md:mt-[5%] space-y-4 relative">
+      <div className="popup-form fixed w-full h-screen top-0 bg-[#57535380] to-transparent overflow-scroll">
+        <div className="popup-form-content bg-white rounded-sm m-auto w-[450px] p-5 flex-col flex md:mt-[5%] space-y-4 relative">
           <button
             onClick={() => {
               closePopUp()

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Helmet } from 'react-helmet'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
 import { register } from '../actions/userActions'
@@ -28,6 +29,18 @@ const RegisterScreen = () => {
   return (
     <FormConainer>
       <div>
+        <Helmet>
+          <title>Register | Ecommerce </title>
+          <meta
+            name="description"
+            content="Ecommerce site with React and Node js"
+          />
+          <meta
+            name="keywords"
+            content="Ecommerce, React, Redux, Nodejs, MongoDB"
+          />
+        </Helmet>
+
         <h2 className="text-center text-3xl">Ecommerce</h2>
         <h2 className="mt-6 text-center text-2xl font-extrabold text-gray-900">
           Sign Up

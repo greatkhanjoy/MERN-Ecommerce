@@ -193,6 +193,15 @@ const CartDrawer = ({ action, toggle }) => {
                         Checkout
                       </Link>
                     </div>
+                    <div className="mt-6">
+                      <Link
+                        onClick={action}
+                        to={'/cart'}
+                        className="flex items-center justify-center rounded-md  bg-black text-white px-6 py-3"
+                      >
+                        Go To Cart
+                      </Link>
+                    </div>
                     <div className="mt-6 flex justify-center text-center text-sm text-gray-500">
                       <p>
                         or{' '}
